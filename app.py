@@ -44,3 +44,9 @@ def run_analysis():
 @app.route('/download/<filename>')
 def download_file(filename):
     return send_file(filename, as_attachment=True)
+
+import os
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # 5000 is a fallback for local dev
+    app.run(host="0.0.0.0", port=port)
