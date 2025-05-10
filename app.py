@@ -45,6 +45,10 @@ def run_analysis():
 def download_file(filename):
     return send_file(filename, as_attachment=True)
 
+@app.route('/plot')
+def view_plot():
+    return send_file("plot.png", mimetype='image/png')
+
 import os
 
 if __name__ == "__main__":
