@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')  # Set non-interactive backend
+
 from flask import Flask, send_file
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -23,12 +26,11 @@ def run_analysis():
     df[df['Peak']][['Timestamp', 'Values']].to_csv("peaks.csv", index=False)
     df[df['Low']][['Timestamp', 'Values']].to_csv("lows.csv", index=False)
 
-    # Plot
+    # Main Plot (without 5-day MA)
     plt.figure(figsize=(16, 8))
     plt.plot(df['Timestamp'], df['Values'], label='Original Value', color='blue', linewidth=1)
     plt.plot(df['Timestamp'], df['MA_1000'], label='1000 MA', color='red', linewidth=2)
     plt.plot(df['Timestamp'], df['MA_5000'], label='5000 MA', color='green', linewidth=2)
-    plt.plot(df['Timestamp'], df['MA_5day'], label='5-Day MA', color='purple', linewidth=2)
 
     ax = plt.gca()
     ax.set_xticks(df['Timestamp'][::len(df)//20])
@@ -37,9 +39,24 @@ def run_analysis():
     plt.grid(True, linestyle='--', linewidth=0.5)
     plt.legend(loc='best')
     plt.tight_layout()
-    plt.savefig("plot.png")  # Save instead of show
+    plt.savefig("plot.png")
+    plt.close()
 
-    return "Analysis complete. Download files at /download/{filename}"
+    # 5-Day MA Plot
+    plt.figure(figsize=(16, 8))
+    plt.plot(df['Timestamp'], df['MA_5day'], label='5-Day MA', color='purple', linewidth=2)
+    
+    ax = plt.gca()
+    ax.set_xticks(df['Timestamp'][::len(df)//20])
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y %H:%M'))
+    plt.xticks(rotation=45)
+    plt.grid(True, linestyle='--', linewidth=0.5)
+    plt.legend(loc='best')
+    plt.tight_layout()
+    plt.savefig("plot_5day_ma.png")
+    plt.close()
+
+    return "Analysis complete. Download files at /download/{filename}. View plots at /plot and /plot_5day"
 
 @app.route('/download/<filename>')
 def download_file(filename):
@@ -49,8 +66,12 @@ def download_file(filename):
 def view_plot():
     return send_file("plot.png", mimetype='image/png')
 
+@app.route('/plot_5day')
+def view_5day_plot():
+    return send_file("plot_5day_ma.png", mimetype='image/png')
+
 import os
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # 5000 is a fallback for local dev
+    port = int(os.environ.get("PORT", 5000))  
     app.run(host="0.0.0.0", port=port)
