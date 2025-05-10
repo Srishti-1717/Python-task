@@ -32,6 +32,7 @@ It also generates a plot and provides downloadable CSVs for all processed result
 | `/download/lows.csv`                 | Downloads CSV of local lows                      |
 | `/download/voltage_below_20.csv`     | Downloads CSV where voltage dropped below 20     |
 | `/download/downward_acceleration.csv`| Downloads CSV of downward slope accelerations    |
-| `/static/plot.png`                   | Opens the generated plot image                   |
+| `/download/plot.png`                 | Downloads the plot of the sample data            |
+| `/plot`                              | Displays the plot of the sample data on the page |
 
 ---
